@@ -8,7 +8,8 @@ const uri = process.env.MONGO_URI || "mongodb+srv://pranshu_mishra:Ditinustask12
 async function getCountriesByName(req, res) {
   const name = req.query.name;
   if (!name) {
-    return res.status(400).json({ error: 'Name query parameter is required' });
+    // return res.status(400).json({ error: 'Name query parameter is required' });
+    return errorResponse(res , STATUS.BAD_REQUEST, "Name Query parameter is required");
   }
 
   const client = new MongoClient(uri);
@@ -22,7 +23,8 @@ async function getCountriesByName(req, res) {
 
     res.json(countries);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // res.status(500).json({ error: err.message });
+    errorResponse(res , STATUS.INTERNAL_ERROR , err.message)
   } finally {
     await client.close();
   }
@@ -34,7 +36,8 @@ async function getCountriesByName(req, res) {
 async function getCountriesByCode(req, res) {
   const code = req.query.code;
   if (!code) {
-    return res.status(400).json({ error: 'Code query parameter is required' });
+    // return res.status(400).json({ error: 'Code query parameter is required' });
+    return errorResponse(res , STATUS.BAD_REQUEST , "Code query parameter is required");
   }
 
   const client = new MongoClient(uri);
@@ -48,7 +51,8 @@ async function getCountriesByCode(req, res) {
 
     res.json(countries);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    // res.status(500).json({ error: err.message });
+    errorResponse(res , STATUS.INTERNAL_ERROR , err.message)
   } finally {
     await client.close();
   }
@@ -68,7 +72,8 @@ async function getAllCountries(req, res) {
     res.json(countries);
   } catch (err) {
     console.error("Error fetching countries:", err);
-    res.status(500).json({ error: err.message });
+    // res.status(500).json({ error: err.message });
+    errorResponse
   } finally {
     await client.close();
   }

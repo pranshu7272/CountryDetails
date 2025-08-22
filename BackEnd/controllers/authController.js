@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { successResponse, errorResponse } = require('../utils/responseHandler');
 const STATUS = require('../utils/statusCodes');
+const statusCodes = require('../utils/statusCodes');
 
 
 // This controller handles user registration and login
@@ -43,10 +44,10 @@ exports.login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!user) return errorResponse(res , STATUS.BAD_REQUEST , "Invalid credentials")  
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ msg: 'Invalid credentials' });
+    if (!isMatch) return errorResponse(res , STATUS.BAD_REQUEST , "Invalid credentials")
 
     const token = jwt.sign(
       { id: user._id, email: user.email },
@@ -54,16 +55,30 @@ exports.login = async (req, res) => {
       { expiresIn: '1d' }
     );
 
-    res.json({
-      token,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
+    // res.json({
+    //   token,
+    //   user: {
+    //     _id: user._id,
+    //     name: user.name,
+    //     email: user.email
+    //   }
+    // });
+
+    successResponse(
+       res ,
+       STATUS.OK,
+       "Login SucessFully",
+      {
+         token ,
+         user: { _id: user._id,
+                name: user.name,
+                email: user.email
+              }
+      } ,
+  )
 
   } catch (err) {
-    res.status(500).json({ msg: 'Server Error' });
+    // res.status(500).json({ msg: 'Server Error' });
+    errorResponse(res , STATUS.INTERNAL_ERROR , "Server Error") 
   }
 };
